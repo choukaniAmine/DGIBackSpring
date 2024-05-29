@@ -10,6 +10,7 @@ import lombok.Data;
 public class DeclarationDto {
 	 private Long idDeclaration;
 	private Contribuable cd;
+
 	public Long getIdDeclaration() {
 		return idDeclaration;
 	}

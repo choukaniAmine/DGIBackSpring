@@ -23,13 +23,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dtos.CalculationRequest;
+import com.example.demo.dtos.CompteById;
 import com.example.demo.dtos.ContribuableDtos;
 import com.example.demo.dtos.DetailDeclarationDto;
+import com.example.demo.dtos.NotificationDto;
 import com.example.demo.dtos.ObligationFiscaledto;
+import com.example.demo.dtos.PayementRequest;
+import com.example.demo.dtos.PayementResponse;
+import com.example.demo.dtos.PayementStatus;
 import com.example.demo.dtos.ReclamationDto;
 import com.example.demo.dtos.SaveDeclaration;
 import com.example.demo.dtos.TypeDeclarationDto;
+import com.example.demo.dtos.paiementDto;
 import com.example.demo.entities.Contribuable;
+import com.example.demo.entities.Declaration;
 import com.example.demo.entities.DetailImpot;
 import com.example.demo.entities.Reclamation;
 import com.example.demo.entities.TypeImpot;
@@ -41,7 +48,10 @@ import com.example.demo.services.ContribuableService;
 import com.example.demo.services.Declarationservice;
 import com.example.demo.services.DetailDeclarationservice;
 import com.example.demo.services.DetailImpotService;
+import com.example.demo.services.KonnectPaymentService;
+import com.example.demo.services.NotificationService;
 import com.example.demo.services.ObligationFiscaleService;
+import com.example.demo.services.PaiementService;
 import com.example.demo.services.ReclamationService;
 import com.example.demo.services.TypeDeclarationService;
 
@@ -75,7 +85,12 @@ private ReclamationService reclamationservice;
 
 @Autowired
 private DetailDeclarationservice detailDeclarationser;
-
+@Autowired
+private KonnectPaymentService konnectService;
+@Autowired
+private PaiementService paiementService;
+@Autowired
+private NotificationService notifservice;
 
 	     @GetMapping("/contribuable/{id}")
 	        public ResponseEntity<?> findContribuableByIdCompte(@PathVariable("id") long id) {
@@ -167,4 +182,58 @@ private DetailDeclarationservice detailDeclarationser;
 			 }
 			 return ResponseEntity.notFound().build();
 		 }
+		 @GetMapping("/declarationbycontribuable")
+		 public ResponseEntity<?> getDeclarationsByMatriculeFiscale(@RequestParam("matriculeFiscale") int matriculeFiscale) {
+		     List<Declaration> declarations = declarationService.getDeclarationsByMatriculeFiscale(matriculeFiscale);
+		     if (declarations.isEmpty()) {
+		         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No declarations found ");
+		     }
+		     return ResponseEntity.ok(declarations);
+		 }
+		 @PostMapping("/init")
+		 public ResponseEntity<?> initPayment(@RequestBody PayementRequest paymentRequest) {
+		     PayementResponse response = konnectService.initiatePayment(paymentRequest);
+		     return ResponseEntity.ok(response);
+		 }
+
+		 @GetMapping("/{paymentId}")
+		 public ResponseEntity<?> getPaymentStatus(@PathVariable String paymentId) {
+		     PayementStatus status = konnectService.getPaymentStatus(paymentId);
+		     return ResponseEntity.ok(status);
+		 }
+		 
+		 @GetMapping("/getCompte")
+		 public ResponseEntity<?> getCompteById(@RequestParam("idcompte") Long idCompte){
+			 CompteById compte=compteservice.getCompteByid(idCompte);
+			 if(compte!=null) {
+			 return ResponseEntity.ok(compte);
+		 }else return ResponseEntity.status(404).body("Compte not found");
+			 }
+		 @PostMapping("/savePaiement")
+		 public ResponseEntity<?> savePaiement(@RequestBody paiementDto paiement)
+		 {
+			 boolean saved=paiementService.createPaiement(paiement);
+			 if(saved) {
+				    return ResponseEntity.status(HttpStatus.ACCEPTED).body(saved);
+			 }return ResponseEntity.status(404).body("Paiement not found");
+		 }
+		 @GetMapping("/notification")
+		 public ResponseEntity<List<NotificationDto>> getAllNotifications(@RequestParam("matricule") int matricule) {
+		     try {
+		         List<NotificationDto> typeList = notifservice.getNotificationByMatricule(matricule);
+		         return ResponseEntity.ok(typeList);
+		     } catch (ExpiredJwtException ex) {
+		         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		     }
+		 }
+		 @PutMapping("/updatechecked")
+		 public ResponseEntity<?> updateNotification(@RequestParam("id") long id) {
+		        notifservice.updateNotification(id);
+		        return ResponseEntity.ok().build();
+		    }
+		 @PutMapping("/updatedeleted")
+		 public ResponseEntity<?> updatedeleted(@RequestParam("id") long id) {
+		        notifservice.updateDeleted(id);
+		        return ResponseEntity.ok().build();
+		    }
 }

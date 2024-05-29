@@ -24,7 +24,7 @@ public class Declaration {
 	private Date dateDeclaration;
 private int moisEffet;
 private int anneEffet;
-  
+  private Float montantApayer=0F;;
 	  @ManyToOne(fetch = FetchType.EAGER)
 	  @JoinColumn(name = "Obligation_id")
 	    private ObligationFiscale obligationFiscale;
@@ -36,6 +36,19 @@ private int anneEffet;
 	  
 	  
 	  
+	   
+
+	    // Autres méthodes et getters/setters de la classe...
+
+	    public Float getMontantApayer() {
+	        return montantApayer;
+	    }
+
+	    public void setMontantApayer(Float montantApayer) {
+	        this.montantApayer = montantApayer;
+	    }
+
+	   
 	public TypeDeclaration getType() {
 		return type;
 	}

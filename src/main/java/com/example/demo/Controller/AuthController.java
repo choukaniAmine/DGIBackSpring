@@ -21,6 +21,7 @@ import org.springframework.security.web.access.AuthorizationManagerWebInvocation
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dtos.ActiviteDtos;
 import com.example.demo.dtos.AuthenticationRequest;
 import com.example.demo.dtos.AuthenticationResponse;
+import com.example.demo.dtos.CompteById;
 import com.example.demo.dtos.CompteDtos;
 import com.example.demo.dtos.ContribuableDtos;
 import com.example.demo.dtos.DeclarationDto;
@@ -36,14 +38,18 @@ import com.example.demo.dtos.DetailDeclarationDto;
 import com.example.demo.dtos.DetailImpotDto;
 import com.example.demo.dtos.FormeJuridiqueDtos;
 import com.example.demo.dtos.ImpotDto;
+import com.example.demo.dtos.MotDePassdto;
 import com.example.demo.dtos.ObligationFiscaledto;
 import com.example.demo.dtos.PasswordDto;
 import com.example.demo.dtos.PeriodeDto;
 import com.example.demo.dtos.ReclamationDto;
+import com.example.demo.dtos.ReclamtionResponse;
+import com.example.demo.dtos.ResetPassword;
 import com.example.demo.dtos.SaveDeclaration;
 import com.example.demo.dtos.SignupRequest;
 import com.example.demo.dtos.TypeDeclarationDto;
 import com.example.demo.dtos.TypeImpotDto;
+import com.example.demo.dtos.UpdateSolutionRecDto;
 import com.example.demo.dtos.UserDto;
 import com.example.demo.dtos.VerificationDto;
 import com.example.demo.dtos.paysDtos;
@@ -53,6 +59,7 @@ import com.example.demo.entities.Declaration;
 import com.example.demo.entities.DetailDeclaration;
 import com.example.demo.entities.DetailImpot;
 import com.example.demo.entities.Inscription;
+import com.example.demo.entities.Reclamation;
 import com.example.demo.repository.CompteRepository;
 import com.example.demo.repository.ContribuableRepository;
 import com.example.demo.repository.InscriptionRepository;
@@ -270,8 +277,67 @@ public ResponseEntity<?> savePassword(@RequestBody PasswordDto signupRequest ) t
     if(createdUserDto==null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("bad request!");
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
 }
+@GetMapping("/declarationbycontribuable")
+public ResponseEntity<?> getDeclarationsByMatriculeFiscale(@RequestParam("matriculeFiscale") int matriculeFiscale) {
+    List<Declaration> declarations = declarationService.getDeclarationsByMatriculeFiscale(matriculeFiscale);
+    if (declarations.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No declarations found ");
+    }
+    return ResponseEntity.ok(declarations);
+}
+@PostMapping("/savereclamation")
+public ResponseEntity<?> saveReclamation(@RequestBody ReclamationDto reclamationDto) {
+    Reclamation saved = reclamationservice.saveReclamation(reclamationDto);
+    if (saved!=null) {
+        return ResponseEntity.ok(saved);
+    } else {
+        return ResponseEntity.badRequest().body(null);
+    }
+}
+@GetMapping("lesreclamations")
+public ResponseEntity<?> lesreclamations(){
+	List<ReclamtionResponse> list=reclamationservice.getAllReclamation();
+	return ResponseEntity.ok(list);
+}
+@PutMapping("/updatereclamation")
+public ResponseEntity<?> saveReclamation(@RequestBody UpdateSolutionRecDto reclamationDto) {
+    Reclamation saved = reclamationservice.updateSolution(reclamationDto);
+    if (saved!=null) {
+        return ResponseEntity.ok(saved);
+    } else {
+        return ResponseEntity.badRequest().body(null);
+    }
+}
+@GetMapping("/getCompte")
+public ResponseEntity<?> getCompteById(@RequestParam("idcompte") Long idCompte){
+	 CompteById compte=compteService.getCompteByid(idCompte);
+	 if(compte!=null) {
+	 return ResponseEntity.ok(compte);
+}else return ResponseEntity.status(404).body("Compte not found");
+	 }
 
+@GetMapping("/passwordoublier")
+public ResponseEntity<?> changePasswordOublier(@RequestParam("email") String email) throws UnsupportedEncodingException, MessagingException{
+	boolean present=authService.sendUpdatePasswordEmail(email);
+	if(present) {
+		 return ResponseEntity.ok(present);
+	}else return ResponseEntity.status(404).body("Compte not found");
+}
 
+@PutMapping("/resetpassword")
+public ResponseEntity<?> resetPassword(@RequestBody ResetPassword rs) {
+	boolean present=authService.resetPassword(rs);
+	if(present) {
+		 return ResponseEntity.ok(present);
+	}else return ResponseEntity.status(404).body("Compte not found");
+    }
+@PutMapping("/updatepasswordclient")
+public ResponseEntity<?> updatePassword(@RequestBody MotDePassdto dd){
+	 boolean saved=compteService.updatepassword(dd);
+	 if(saved) {
+		return ResponseEntity.ok(saved);
+	 }else return ResponseEntity.status(404).body("Compte not found");
+}
 }
 
 

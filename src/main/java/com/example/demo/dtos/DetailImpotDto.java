@@ -8,7 +8,8 @@ public class DetailImpotDto {
 	 
 	private String libelle;
 	private TypeDeDetailImpot typeDetail;
-	private NatureRubrique natureRubrique;
+	 private boolean calculable;
+	 private String formule;
 	private int ordre;
 	private boolean obligatoire;
 	 private TypeImpotDto typeImpot;
@@ -25,11 +26,18 @@ public class DetailImpotDto {
 	public void setTypeDetail(TypeDeDetailImpot typeDetail) {
 		this.typeDetail = typeDetail;
 	}
-	public NatureRubrique getNatureRubrique() {
-		return natureRubrique;
+
+	public boolean isCalculable() {
+		return calculable;
 	}
-	public void setNatureRubrique(NatureRubrique natureRubrique) {
-		this.natureRubrique = natureRubrique;
+	public void setCalculable(boolean calculable) {
+		this.calculable = calculable;
+	}
+	public String getFormule() {
+		return formule;
+	}
+	public void setFormule(String formule) {
+		this.formule = formule;
 	}
 	public int getOrdre() {
 		return ordre;

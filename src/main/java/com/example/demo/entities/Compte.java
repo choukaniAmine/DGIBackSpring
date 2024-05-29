@@ -73,7 +73,7 @@ public class Compte implements UserDetails {
 	    @Override
 	    public boolean isAccountNonLocked() {
 	        // TODO Auto-generated method stub
-	        if(userRole==UserRole.Admin){
+	        if(userRole==UserRole.Admin || userRole==UserRole.Responsable){
 	            return true;
 	        }else return inscription.isNonLocked();
 	    }
@@ -87,7 +87,7 @@ public class Compte implements UserDetails {
 	    @Override
 	    public boolean isEnabled() {
 	        // TODO Auto-generated method stub
-	        if(userRole==UserRole.Admin){
+	        if(userRole==UserRole.Admin || userRole==UserRole.Responsable){
 	            return true;
 	        }else return inscription.isEnabled();
 	    }
@@ -151,8 +151,8 @@ public CompteDtos getcompteDtos()
         userDto.setNonLocked(inscription.getUserDto().isNonLocked());
         userDto.setDate(inscription.getUserDto().getDate());
         userDto.setContribuable(inscription.getUserDto().getContribuable());
-        userDto.setName(inscription.getUserDto().getName());
-       // userDto.setPrenom(inscription.getInscription().getPrenom());
+        userDto.setNom(inscription.getUserDto().getNom());
+       userDto.setPrenom(inscription.getUserDto().getPrenom());
         userDto.setTypeIdentifiant(inscription.getUserDto().getTypeIdentifiant());
         userDto.setValeurIdentifiant(inscription.getUserDto().getValeurIdentifiant());
         userDto.setPoste(inscription.getUserDto().getPoste());

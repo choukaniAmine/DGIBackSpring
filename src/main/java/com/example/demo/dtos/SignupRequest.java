@@ -8,7 +8,8 @@ import lombok.Data;
 @Data
 public class SignupRequest {
 private String email;
-private String name;
+private String prenom;
+private String nom;
 private String password;
 private String poste;
 private  Contribuable contribuable;
@@ -46,11 +47,18 @@ public String getEmail() {
 public void setEmail(String email) {
 	this.email = email;
 }
-public String getName() {
-	return name;
+
+public String getPrenom() {
+	return prenom;
 }
-public void setName(String name) {
-	this.name = name;
+public void setPrenom(String prenom) {
+	this.prenom = prenom;
+}
+public String getNom() {
+	return nom;
+}
+public void setNom(String nom) {
+	this.nom = nom;
 }
 public String getPassword() {
 	return password;

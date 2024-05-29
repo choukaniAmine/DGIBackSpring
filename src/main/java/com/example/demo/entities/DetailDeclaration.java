@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
+import com.example.demo.enuum.NatureRubrique;
 @Entity
 
 @Table(name= "\"detailDeclaration\"")
@@ -20,6 +20,7 @@ public class DetailDeclaration {
     @SequenceGenerator(name = "yourGenerator19Name", sequenceName = "DetailDeclaration_seq", allocationSize = 1)
 	private Long idDetailDeclaration;
 	private String valeur;
+	 private NatureRubrique naturerebrique;
 	  @ManyToOne(fetch = FetchType.EAGER)
 	  @JoinColumn(name = "DetailImpot_id")
 	    private DetailImpot detailImpot;
@@ -58,6 +59,14 @@ public class DetailDeclaration {
 
 	public void setDeclaration(Declaration delcaration) {
 		this.declaration = delcaration;
+	}
+
+	public NatureRubrique getNaturerebrique() {
+		return naturerebrique;
+	}
+
+	public void setNaturerebrique(NatureRubrique naturerebrique) {
+		this.naturerebrique = naturerebrique;
 	}
 	  
 	  

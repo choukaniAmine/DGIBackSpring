@@ -12,11 +12,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dtos.PasswordDto;
+import com.example.demo.dtos.ResetPassword;
 import com.example.demo.dtos.SignupRequest;
 import com.example.demo.dtos.UserDto;
+import com.example.demo.entities.Compte;
 import com.example.demo.entities.Inscription;
 
 import com.example.demo.enuum.UserRole;
+import com.example.demo.repository.CompteRepository;
 import com.example.demo.repository.InscriptionRepository;
 import com.example.demo.repository.UserRepository;
 
@@ -32,11 +35,14 @@ public class AuthServiceImpl implements AuthService {
 private InscriptionRepository userRepository;
 	@Autowired
 	private JavaMailSender mailSender;
+	@Autowired
+	private CompteRepository compteRep;
 	@Override
 	public UserDto  createCustomer(SignupRequest signupRequest) {
 		Inscription user=new Inscription();
         user.setEmail(signupRequest.getEmail());
-       user.setName(signupRequest.getName());
+       user.setNom(signupRequest.getNom());
+       user.setPrenom(signupRequest.getPrenom());
         user.setUserRole(UserRole.Client);
         user.setPoste(signupRequest.getPoste());
         user.setEnabled(false);
@@ -55,7 +61,8 @@ private InscriptionRepository userRepository;
         createdUserDto.setEnabled(false);
         createdUserDto.setNonLocked(false);
         createdUserDto.setDate(new Date());
-        createdUserDto.setName(createdCustomer.getName());
+        createdUserDto.setNom(createdCustomer.getNom());
+        createdUserDto.setPrenom(createdCustomer.getPrenom());
   createdUserDto.setContribuable(createdCustomer.getContribuable());
   createdUserDto.setTypeIdentifiant(createdCustomer.getTypeIdentifiant());
   createdUserDto.setValeurIdentifiant(createdCustomer.getValeurIdentifiant());
@@ -117,7 +124,8 @@ private InscriptionRepository userRepository;
 		 user.setPoste(pd.getInscription().getPoste());
 		 
 		 user.setNonLocked(pd.getInscription().isNonLocked());
-		 user.setName(pd.getInscription().getName());
+		 user.setNom(pd.getInscription().getNom());
+		 user.setPrenom(pd.getInscription().getPrenom());
 		 user.setUserRole(pd.getInscription().getUserRole());
 		 user.setTypeIdentifiant(pd.getInscription().getTypeIdentifiant());
 	 
@@ -132,7 +140,8 @@ private InscriptionRepository userRepository;
      createdUserDto.setNonLocked(createdCustomer.isNonLocked());
      createdUserDto.setDate(createdCustomer.getDateInscri());
      createdUserDto.setContribuable(createdCustomer.getContribuable());
-     createdUserDto.setName(createdCustomer.getName());
+     createdUserDto.setNom(createdCustomer.getNom());
+     createdUserDto.setPrenom(createdCustomer.getPrenom());
      
      createdUserDto.setTypeIdentifiant(createdCustomer.getTypeIdentifiant());
      createdUserDto.setValeurIdentifiant(createdCustomer.getValeurIdentifiant());
@@ -151,10 +160,50 @@ private InscriptionRepository userRepository;
 	     createdUserDto.setNonLocked(createdCustomer.get().isNonLocked());
 	     createdUserDto.setDate(createdCustomer.get().getDateInscri());
 	     createdUserDto.setContribuable(createdCustomer.get().getContribuable());
-	     createdUserDto.setName(createdCustomer.get().getName());
+	     createdUserDto.setNom(createdCustomer.get().getNom());
+	     createdUserDto.setPrenom(createdCustomer.get().getPrenom());
 	     createdUserDto.setPoste(createdCustomer.get().getPoste());
 	     createdUserDto.setTypeIdentifiant(createdCustomer.get().getTypeIdentifiant());
 	     createdUserDto.setValeurIdentifiant(createdCustomer.get().getValeurIdentifiant());
 	     return createdUserDto;
 	}
+	@Override
+	public boolean sendUpdatePasswordEmail(String email) throws UnsupportedEncodingException, MessagingException {
+Optional<Inscription> ins=this.userRepository.findByEmail(email);
+if(ins.isPresent()) {
+		  String subject = "Password Reset Request";
+		    String senderName = "Direction Générale des Impôts";
+		    String mailContent = "<p>Dear " + email + ",</p>";
+		    mailContent += "<p>We received a request to reset your password. Please click the link below to reset your password: <br></p>";
+		    String url = "http://localhost:4200/admin/resetpassword/"+email;
+		    mailContent += "<h2><a href=\"" + url + "\">Reset Password</a></h2>";
+		    mailContent += "<p>If you did not request a password reset, please ignore this email.</p>";
+		    mailContent += "<p><br>Direction Générale des Impôts</p>";
+		    
+		    MimeMessage message = mailSender.createMimeMessage();
+		    MimeMessageHelper helper = new MimeMessageHelper(message);
+		    
+		    helper.setFrom("pfedgi1920@gmail.com", senderName);
+		    helper.setTo(email);
+		    helper.setSubject(subject);
+		    helper.setText(mailContent, true);
+		    
+		    mailSender.send(message);
+		    return true;
+}else return false;
+	}
+	@Override
+	public boolean resetPassword(ResetPassword rp) {
+		Optional<Inscription> ins=this.userRepository.findByEmail(rp.getEmail());
+		Optional<Compte> compte=this.compteRep.findByEmail(rp.getEmail());
+		if(ins.isPresent()&&compte.isPresent()) {
+			ins.get().setPassword(new BCryptPasswordEncoder().encode(rp.getPassword()));
+			compte.get().setPassword(new BCryptPasswordEncoder().encode(rp.getPassword()));
+			this.compteRep.save(compte.get());
+			this.userRepository.save(ins.get());
+			return true;
+		}else return false;
+	}
+	
+
 }

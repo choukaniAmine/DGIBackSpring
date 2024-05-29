@@ -4,9 +4,13 @@ package com.example.demo.entities;
 
 import java.util.Date;
 
+import com.example.demo.dtos.ContribuableDtos;
+import com.example.demo.dtos.ReclamtionResponse;
 import com.example.demo.enuum.Etat;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,6 +48,33 @@ public class Reclamation {
 	     private  Contribuable contribuable;
 
 
+		 @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+		 @JoinColumn(name = "declaration_id", nullable = true)
+		 	private Declaration declaration;
+
+		 
+		 
+	   public Declaration getDeclaration() {
+			return declaration;
+		}
+
+		public void setDeclaration(Declaration declaration) {
+			this.declaration = declaration;
+		}
+
+	public ReclamtionResponse getreclamation()
+	   {
+		   ReclamtionResponse reclamation=new ReclamtionResponse();
+		   reclamation.setContenu(contenu);
+		   reclamation.setDateReclamation(dateReclamation);
+		   reclamation.setEtat(etat);
+		   reclamation.setDeclaration(declaration);
+		   reclamation.setSolution(solution);
+		   reclamation.setTitre(titre);
+		   reclamation.setIdReclamation(idReclamation);
+		   reclamation.setContribuable(contribuable.getContribuable());
+		   return reclamation;
+	   }
 
 		public Date getDateReclamation() {
 			return dateReclamation;

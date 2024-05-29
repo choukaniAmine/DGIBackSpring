@@ -26,7 +26,8 @@ public DetailImpotDto saveDetailImpot(DetailImpotDto dt) {
              .orElseThrow(() -> new IllegalArgumentException("Invalid impot"));
 	 DetailImpot detail=new DetailImpot();
 	 detail.setLibelle(dt.getLibelle());
-	 detail.setNatureRubrique(dt.getNatureRubrique());
+	 detail.setCalculable(dt.isCalculable());
+		detail.setFormule(dt.getFormule());
 	 detail.setObligatoire(dt.isObligatoire());
 	 detail.setOrdre(dt.getOrdre());
 	 detail.setTypeDetail(dt.getTypeDetail());
@@ -35,7 +36,8 @@ public DetailImpotDto saveDetailImpot(DetailImpotDto dt) {
 	 DetailImpotDto detaildto=new DetailImpotDto();
 	
 	 detaildto.setLibelle(detailcree.getLibelle());
-	 detaildto.setNatureRubrique(detailcree.getNatureRubrique());
+	 detaildto.setCalculable(detailcree.isCalculable());
+		detaildto.setFormule(detailcree.getFormule());
 	 detaildto.setObligatoire(detailcree.isObligatoire());
 	 detaildto.setTypeDetail(detailcree.getTypeDetail());
 	 TypeImpotDto impotdto=new TypeImpotDto();

@@ -9,8 +9,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dtos.DeclarationDto;
 import com.example.demo.dtos.DetailDeclarationDto;
 import com.example.demo.dtos.SaveDeclaration;
+import com.example.demo.dtos.SaveMontantDto;
 import com.example.demo.entities.Declaration;
 import com.example.demo.entities.DetailDeclaration;
 import com.example.demo.entities.DetailImpot;
@@ -31,12 +33,14 @@ private DetailImpotRepositpry detailimpotRepo;
 private DecalrataionRepository declarationRepo;
 @Autowired
 private DetailDecalrationRepository detailDeclarationRepo;
+
+
 public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc) {
     Optional<ObligationFiscale> obligation = obligationRepo.findById(dc.getIdObligation());
-    
+
     // Initialize detailMap here
     Map<DetailImpot, DetailDeclarationDto> detailMap = new HashMap<>();
-    
+
     if (obligation.isPresent()) {
         Optional<Declaration> declaration = declarationRepo.findByMoisEffetAndAnneEffetAndObligationFiscale(dc.getMoisEffet(), dc.getAnneEffet(), obligation.get());
         if (!declaration.isPresent()) {
@@ -44,8 +48,8 @@ public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc
             newDeclaration.setObligationFiscale(obligation.get());
             newDeclaration.setAnneEffet(dc.getAnneEffet());
             newDeclaration.setMoisEffet(dc.getMoisEffet());
-            newDeclaration.setType(dc.getType());
             newDeclaration.setDateDeclaration(new Date());
+            newDeclaration.setType(dc.getType());
             this.declarationRepo.save(newDeclaration);
             List<DetailImpot> lesDetailsImpot = detailimpotRepo.findByTypeImpot(obligation.get().getTypeImpot());
 
@@ -56,10 +60,12 @@ public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc
                 // Assuming you have setters for detailImpot and declaration in DetailDeclaration class
                 newDetailDeclaration.setDetailImpot(detail);
                 newDetailDeclaration.setDeclaration(newDeclaration);
+
                 this.detailDeclarationRepo.save(newDetailDeclaration);
                 DetailDeclarationDto dto = new DetailDeclarationDto();
                 dto.setIdDetailDeclaration(newDetailDeclaration.getIdDetailDeclaration());
-                dto.setValeur(null);// Put the DetailImpot object as key and DetailDeclaration object as value into the map
+                dto.setValeur(null);
+                dto.setIdDeclaration(newDeclaration.getIdDeclaration());// Put the DetailImpot object as key and DetailDeclaration object as value into the map
                 detailMap.put(detail, dto);
             }
             return detailMap;
@@ -68,7 +74,8 @@ public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc
                 // Return an empty map if it's an initial type
                 return new HashMap<>();
             } else {
-                // If it's not an initial type, fetch existing details and populate detailMap
+
+
                 List<DetailImpot> lesDetailsImpot = detailimpotRepo.findByTypeImpot(declaration.get().getObligationFiscale().getTypeImpot());
 
                 // Fetch all detail declarations associated with the given declaration
@@ -79,13 +86,13 @@ public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc
                     Optional<DetailDeclaration> relatedDetail = lesdetailsDeclaration.stream()
                             .filter(detailDeclaration -> detailDeclaration.getDetailImpot().getIdDetail() == detail.getIdDetail())
                             .findFirst();
-                    
+
                     // If a matching DetailDeclaration is found, create a DetailDeclarationDto
                     relatedDetail.ifPresent(detailDeclaration -> {
                         DetailDeclarationDto dto = new DetailDeclarationDto();
                         dto.setIdDetailDeclaration(detailDeclaration.getIdDetailDeclaration());
                         dto.setValeur(detailDeclaration.getValeur());
-                        
+                        dto.setIdDeclaration(declaration.get().getIdDeclaration());
                         // Put the DetailImpot object as the key and DetailDeclarationDto object as the value into the map
                         detailMap.put(detail, dto);
                     });
@@ -95,7 +102,20 @@ public Map<DetailImpot, DetailDeclarationDto> saveDeclaration(SaveDeclaration dc
             }
         }
     }
-    return new HashMap<>(); // Return an empty map if obligation is not present
+    return new HashMap<>();
 }
 
+
+public boolean updateMontantaCalculer(SaveMontantDto di) {
+	Optional<Declaration> declaration=declarationRepo.findById(di.getIdDeclaration());
+	if(declaration.isPresent()) {
+		declaration.get().setMontantApayer(di.getMontantApayer());
+		declarationRepo.save(declaration.get());
+		return true;
+	}else return false;
+}
+
+public List<Declaration> getDeclarationsByMatriculeFiscale(int matriculeFiscale) {
+	return declarationRepo.findByObligationFiscale_Contribuable_MatriculeFiscale(matriculeFiscale);
+}
 }

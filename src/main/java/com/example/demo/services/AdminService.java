@@ -38,8 +38,8 @@ public CompteDtos acceptInscri(UserDto ud) {
        user.setPoste(ud.getPoste());
        user.setEnabled(ud.isEnabled());
        user.setContribuable(ud.getContribuable());
-       user.setName(ud.getName());
-       //user.setPrenom(ud.getPrenom());
+       user.setNom(ud.getNom());
+       user.setPrenom(ud.getPrenom());
        user.setTypeIdentifiant(ud.getTypeIdentifiant());
        user.setValeurIdentifiant(ud.getValeurIdentifiant());
        user.setNonLocked(true);
@@ -66,8 +66,8 @@ public CompteDtos acceptInscri(UserDto ud) {
        UserDto.setNonLocked(true);
        UserDto.setDate(compteCreefinal.getInscription().getDateInscri());
        UserDto.setContribuable(compteCreefinal.getInscription().getContribuable());
-       UserDto.setName(compteCreefinal.getInscription().getName());
-    // UserDto.setPrenom(compteCreefinal.getInscription().getPrenom());
+       UserDto.setNom(compteCreefinal.getInscription().getNom());
+     UserDto.setPrenom(compteCreefinal.getInscription().getPrenom());
        UserDto.setTypeIdentifiant(compteCreefinal.getInscription().getTypeIdentifiant());
        UserDto.setValeurIdentifiant(compteCreefinal.getInscription().getValeurIdentifiant());
        compteCreeDto.setInscription(UserDto);
@@ -96,7 +96,7 @@ public CompteDtos changePassword(UpdatePasswordDto up) {
 	
 }
 public boolean verifyPassword(String rawPassword, String encodedPasswordFromDB) {
-    // Vérifie si le mot de passe non crypté correspond au mot de passe crypté dans la base de données
+   
 	   BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     return encoder.matches(rawPassword, encodedPasswordFromDB);
 }

@@ -1,6 +1,6 @@
 package com.example.demo.entities;
 
-import com.example.demo.enuum.NatureRubrique;
+
 import com.example.demo.enuum.TypeDeDetailImpot;
 
 import jakarta.persistence.CascadeType;
@@ -23,7 +23,8 @@ public class DetailImpot {
 	  private Long idDetail;
 	private String libelle;
 	private TypeDeDetailImpot typeDetail;
-	private NatureRubrique natureRubrique;
+	private boolean calculable;
+	private String formule;
 	private int ordre;
 	private boolean obligatoire;
 	
@@ -55,12 +56,7 @@ public class DetailImpot {
 	public void setTypeDetail(TypeDeDetailImpot typeDetail) {
 		this.typeDetail = typeDetail;
 	}
-	public NatureRubrique getNatureRubrique() {
-		return natureRubrique;
-	}
-	public void setNatureRubrique(NatureRubrique natureRubrique) {
-		this.natureRubrique = natureRubrique;
-	}
+	
 	public int getOrdre() {
 		return ordre;
 	}
@@ -73,12 +69,25 @@ public class DetailImpot {
 	public void setObligatoire(boolean obligatoire) {
 		this.obligatoire = obligatoire;
 	}
+	public boolean isCalculable() {
+		return calculable;
+	}
+	public void setCalculable(boolean calculable) {
+		this.calculable = calculable;
+	}
+	public String getFormule() {
+		return formule;
+	}
+	public void setFormule(String formule) {
+		this.formule = formule;
+	}
 	@Override
 	public String toString() {
 		return "DetailImpot [idDetail=" + idDetail + ", libelle=" + libelle + ", typeDetail=" + typeDetail
-				+ ", natureRubrique=" + natureRubrique + ", ordre=" + ordre + ", obligatoire=" + obligatoire
-				+ ", typeImpot=" + typeImpot + "]";
+				+ ", calculable=" + calculable + ", formule=" + formule + ", ordre=" + ordre + ", obligatoire="
+				+ obligatoire + ", typeImpot=" + typeImpot + "]";
 	}
+
 	
 	
 	

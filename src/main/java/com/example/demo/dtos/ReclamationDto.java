@@ -13,7 +13,16 @@ public class ReclamationDto {
     private Etat etat;
     private Date dateReclamation;
     private String solution;
+    private long idDeclaration;
     private ContribuableDtos contribuable;
+    
+    
+	public long getIdDeclaration() {
+		return idDeclaration;
+	}
+	public void setIdDeclaration(long idDeclaration) {
+		this.idDeclaration = idDeclaration;
+	}
 	public long getIdReclamation() {
 		return idReclamation;
 	}

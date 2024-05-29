@@ -116,6 +116,7 @@ public void setActivites(Activite activites) {
 	}
 	public ContribuableDtos getContribuable() {
         ContribuableDtos contribuable=new ContribuableDtos();
+        contribuable.setIdContribuable(idContribuable);
         contribuable.setActivites(activites);
         contribuable.setAdress(adress);
         contribuable.setDateDeMatriculation(dateDeMatriculation);

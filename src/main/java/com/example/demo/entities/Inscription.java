@@ -46,7 +46,8 @@ public class Inscription implements UserDetails {
 public String valeurIdentifiant;
 public Identifiant typeIdentifiant;
     private String password;
-    private String name;
+    private String nom;
+    private String prenom;
     private boolean enabled;
     private String verificationCode;
     private boolean NonLocked;
@@ -59,11 +60,18 @@ public Identifiant typeIdentifiant;
  private  Contribuable contribuable;
 
    
-	public String getName() {
-		return name;
+	
+	public String getNom() {
+		return nom;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+	public String getPrenom() {
+		return prenom;
+	}
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
 	}
 	public Contribuable getContribuable() {
 		return contribuable;
@@ -191,6 +199,8 @@ public UserDto getUserDto() {
     user.setTypeIdentifiant(typeIdentifiant);
     user.setUserRole(userRole);
     user.setValeurIdentifiant(valeurIdentifiant);
+    user.setNom(nom);
+    user.setPrenom(prenom);
     return user;
 }
 
